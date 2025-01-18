@@ -1,11 +1,11 @@
-
-
 const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
 
+// Витягуємо дані з середовища
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const TEACHER_CHAT_ID = process.env.TEACHER_CHAT_ID;
 
+// Створюємо бот з використанням polling
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 
 const sessions = {};
@@ -35,10 +35,9 @@ bot.onText(/\/start/, (msg) => {
     caption: `Привіт, я Даша твій сучасний тютор з англійської! Давайте запишемось на пробний урок. Пробний урок триває 30 хвилин, та являється повністю безкоштовним!`
   }).then(() => {
     setTimeout(() => {
-    bot.sendMessage(chatId, questions[0]);
-    },2000)
+      bot.sendMessage(chatId, questions[0]);
+    }, 2000)
   });
-  
 });
 
 // Обробка повідомлень
@@ -61,8 +60,8 @@ bot.on("message", (msg) => {
     bot.sendMessage(chatId, questions[1], {
       reply_markup: {
         inline_keyboard: [
-          [{ text: "Себе", callback_data: "self" }],
-          [{ text: "Дитину", callback_data: "child" }],
+          [{ text: "Себе", callback_data: "self" }], 
+          [{ text: "Дитину", callback_data: "child" }]
         ],
       },
     });
@@ -126,7 +125,6 @@ bot.on("message", (msg) => {
 });
 
 // Обробка callback_data для кнопок
-// Обробка callback_data для кнопок
 bot.on("callback_query", (query) => {
     const chatId = query.message.chat.id;
     const session = sessions[chatId];
@@ -177,7 +175,6 @@ bot.on("callback_query", (query) => {
         session.answers.push(selectedLevel);
         session.step++;
         
-        // Підсумкове повідомлення про нового користувача
         const summary = `Новий запис на урок:\n\n` +
           `1. Ім'я: ${session.answers[0]}\n` +
           `2. Запис: ${session.answers[1] === "self" ? "Себе" : "Дитину"}\n` +
@@ -186,11 +183,15 @@ bot.on("callback_query", (query) => {
           `5. День уроку: ${session.answers[4]}\n` +
           `6. Telegram: @${session.answers[5]}\n` +
           `7. Рівень: ${session.answers[6]}`;
-  
+
         bot.sendMessage(TEACHER_CHAT_ID, summary);
-        bot.sendMessage(chatId, "Дякуємо! Ми зв'яжемося з вами для подальшої консультації.");
+        bot.sendMessage(chatId, "Дякуємо! Ми зв'яжемося з вами.");
         delete sessions[chatId];
       }
     }
-  });
-  
+});
+
+// Vercel повинен експортувати функцію для обробки запитів
+module.exports = (req, res) => {
+  res.status(200).send("Telegram bot is running.");
+};
