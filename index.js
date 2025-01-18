@@ -1,3 +1,5 @@
+
+
 const TelegramBot = require('node-telegram-bot-api');
 require('dotenv').config();
 
@@ -29,7 +31,7 @@ bot.onText(/\/start/, (msg) => {
   const userName = msg.chat.username;
   sessions[chatId] = { answers: [], step: 0, isChild: null };
 
-  bot.sendPhoto(chatId, 'C:/Users/Василь/Downloads/logo 2.png', {
+  bot.sendPhoto(chatId, 'https://static.vecteezy.com/vite/assets/photo-masthead-375-BoK_p8LG.webp', {
     caption: `Привіт, я Даша твій сучасний тютор з англійської! Давайте запишемось на пробний урок. Пробний урок триває 30 хвилин, та являється повністю безкоштовним!`
   }).then(() => {
     setTimeout(() => {
